@@ -33,6 +33,7 @@ class Edge_property
     int bike_direct;
     int bike_reverse;
     int foot;
+    node_t way; // way identifier associated with this edge
 
     Edge_property();
 
@@ -52,7 +53,7 @@ class Edge_property
 
 struct Node
 {
-    node_t id;
+    node_t id; // == node id
     double lon;
     double lat;
     
@@ -77,6 +78,7 @@ struct Edge
     node_t edge_id;
     node_t source;
     node_t target;
+    node_t way; // way identifier associated with this edge
     float length;
     char car;
     char car_d;
@@ -85,8 +87,8 @@ struct Edge
     char foot;
     std::string geom;
     Edge() {}
-    Edge(node_t e, node_t s, node_t t, float l, char c, char cd, char b, char bd, char f, const std::string & str) :
-        edge_id(e), source(s), target(t), length(l),
+    Edge(node_t e, node_t s, node_t t, node_t w, float l, char c, char cd, char b, char bd, char f, const std::string & str) :
+        edge_id(e), source(s), target(t), way(w), length(l),
         car(c), car_d(cd), bike(b), bike_d(bd), foot(f),
         geom(str)
     {}

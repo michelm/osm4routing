@@ -20,11 +20,12 @@ class Node(object):
             self.the_geom = wkt_geom
 
 class Edge(object):
-    def __init__(self, id, source, target, length, car, car_rev, bike, bike_rev, foot, the_geom, spatial=False):
+    def __init__(self, id, source, target, way, length, car, car_rev, bike, bike_rev, foot, the_geom, spatial=False):
         wkt_geom = 'LINESTRING({0})'.format(the_geom)
         self.id = id
         self.source = source
         self.target = target
+        self.way = way
         self.length = length
         self.car = car
         self.car_rev = car_rev
@@ -63,6 +64,7 @@ def parse(file, output="csv", edges_name="edges", nodes_name="nodes", spatial=Fa
             Column('id', Integer, primary_key=True),
             Column('source', BigInteger, index=True),
             Column('target', BigInteger, index=True),
+            Column('way', BigInteger, index=True),
             Column('length', Float),
             Column('car', SmallInteger),
             Column('car_rev', SmallInteger),
@@ -86,22 +88,22 @@ def parse(file, output="csv", edges_name="edges", nodes_name="nodes", spatial=Fa
 
     extension = os.path.splitext(file)[1]
     if extension == '.bz2':
-        print "Recognized as bzip2 file"
+        print("Recognized as bzip2 file")
         f = bz2.BZ2File(file, 'r') 
 
     elif extension == '.gz':
-        print "Recognized as gzip2 file"
+        print("Recognized as gzip2 file")
         f = gzip.open(file, 'r') 
 
     else:
-        print "Supposing OSM/xml file"
+        print("Supposing OSM/xml file")
         filesize = os.path.getsize(file)
         f = open(file, 'r') 
 
     buffer_size = 4096
     p = Parser()
     eof = False
-    print "Step 1: reading file {0}".format(file)
+    print("Step 1: reading file {0}".format(file))
     read = 0
     while not eof:
         s = f.read(buffer_size)
@@ -109,9 +111,9 @@ def parse(file, output="csv", edges_name="edges", nodes_name="nodes", spatial=Fa
         p.read(s, len(s), eof)
         read += len(s)
 
-    print "  Read {0} nodes and {1} ways\n".format(p.get_osm_nodes(), p.get_osm_ways())
+    print("  Read {0} nodes and {1} ways\n".format(p.get_osm_nodes(), p.get_osm_ways()))
 
-    print "Step 2: saving the nodes"
+    print("Step 2: saving the nodes")
     nodes = p.get_nodes()
     if output == "csv":
         n = open(nodes_name + '.csv', 'w')
@@ -129,27 +131,27 @@ def parse(file, output="csv", edges_name="edges", nodes_name="nodes", spatial=Fa
     else:
         session.commit()
 
-    print "  Wrote {0} nodes\n".format(count)
+    print("  Wrote {0} nodes\n".format(count))
 
-    print "Step 3: saving the edges"
+    print("Step 3: saving the edges")
     edges = p.get_edges()
     count = 0
     if output == "csv":
         e = open(edges_name + '.csv', 'w')
-        e.write('"edge_id","source","target","length","car","car reverse","bike","bike reverse","foot","WKT"\n')
+        e.write('"edge_id","source","target","way","length","car","car reverse","bike","bike reverse","foot","WKT"\n')
     for edge in edges:
         if output == "csv":
-            e.write('{0},{1},{2},{3},{4},{5},{6},{7},{8},LINESTRING({9})\n'.format(edge.edge_id, edge.source, edge.target, edge.length, edge.car, edge.car_d, edge.bike, edge.bike_d, edge.foot, edge.geom))
+            e.write('{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},LINESTRING({10})\n'.format(edge.edge_id, edge.source, edge.target, edge.way, edge.length, edge.car, edge.car_d, edge.bike, edge.bike_d, edge.foot, edge.geom))
         else:
-            session.add(Edge(edge.edge_id, edge.source, edge.target, edge.length, edge.car, edge.car_d, edge.bike, edge.bike_d, edge.foot, edge.geom, spatial=spatial))
+            session.add(Edge(edge.edge_id, edge.source, edge.target, edge.way, edge.length, edge.car, edge.car_d, edge.bike, edge.bike_d, edge.foot, edge.geom, spatial=spatial))
         count += 1
     if output == "csv":
         e.close()
     else:
         session.commit()
-    print "  Wrote {0} edges\n".format(count)
+    print("  Wrote {0} edges\n".format(count))
 
-    print "Happy routing :) and please give some feedback!"
+    print("Happy routing :) and please give some feedback!")
 
 def main():
     usage = """Usage: %prog [options] input_file

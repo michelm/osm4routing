@@ -16,6 +16,7 @@ class Edge_property
     int bike_direct;
     int bike_reverse;
     int foot;
+    unsigned long long way;
 
     Edge_property();
 
@@ -38,6 +39,7 @@ struct Edge
     unsigned long long edge_id;
     unsigned long long source;
     unsigned long long target;
+    unsigned long long way;
     float length;
     char car;
     char car_d;

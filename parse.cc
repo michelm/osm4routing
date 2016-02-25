@@ -68,13 +68,14 @@ start(void * data, const char *el, const char **attr)
         d->ep.reset();
         const char* name = *attr++;
         const char* value = *attr++;
-        if( !strcmp(name, "id") == 0 )
+        if( strcmp(name, "id") != 0 )
         {
             cout << "fuck" << std::endl;
         }
         else
         {
             d->current_way = atoll(value);
+            d->ep.way = atoll(value);
         }
         d->ways_count++;
     }
@@ -110,6 +111,7 @@ void end(void * data, const char * el)
             d->temp_edges << d->ep.foot << " "
                 << d->ep.car_direct << " " << d->ep.car_reverse << " "
                 << d->ep.bike_direct << " " << d->ep.bike_reverse << " "
+                << d->ep.way << " "
                 << d->way_nodes.size();
             for(it = d->way_nodes.begin(); it < d->way_nodes.end(); ++it)
             {
@@ -180,12 +182,12 @@ vector<Edge> Parser::get_edges() const
     int edges_inserted = 0;
     Node n;
     string line;
-
+    node_t wid; // way identifier
 
     while(getline(tmp, line))
     {
         stringstream way(line);
-        way >> foot >> car_direct >> car_rev >> bike_direct >> bike_rev >> nb;
+        way >> foot >> car_direct >> car_rev >> bike_direct >> bike_rev >> wid >> nb;
         bool first_node = true;
 
         // We skip the edge if there is an invalid node
@@ -218,7 +220,7 @@ vector<Edge> Parser::get_edges() const
                 {
                     if(!skip_edge)
                     {
-                      ret.push_back(Edge(edges_inserted, source, id, length, car_direct, car_rev, bike_direct, bike_rev, foot, geom.str()));
+                      ret.push_back(Edge(edges_inserted, source, id, wid, length, car_direct, car_rev, bike_direct, bike_rev, foot, geom.str()));
                     }
 
                     edges_inserted++;

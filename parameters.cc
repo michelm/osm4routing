@@ -50,6 +50,7 @@ void Edge_property::reset()
     bike_direct = unknown;
     bike_reverse = unknown;
     foot = unknown;
+    way = 0;
 }
 
 void Edge_property::normalize()
@@ -140,6 +141,8 @@ bool Edge_property::update(const std::string & key, const std::string & val)
             bike_reverse = bike_allowed;
         else if(val == "share_busway")
             bike_direct = bike_busway;
+        else if(val == "opposite_share_busway")
+            bike_reverse = bike_busway;
         else if(val == "lane_left")
             bike_reverse = bike_lane;
         else
@@ -148,14 +151,18 @@ bool Edge_property::update(const std::string & key, const std::string & val)
 
     else if(key == "bicycle")
     {
-        if(val == "yes" || val == "permissive" || val == "destination" || val == "designated" || val == "private" || val == "true")
+        if(val == "yes" || val == "permissive" || val == "destination" || val == "designated" || val == "private" || val == "true" || 
+            val == "use_sidepath") // bike allowed see http://wiki.openstreetmap.org/wiki/Tag:bicycle%3Duse_sidepath
             bike_direct = bike_allowed;
-        else if(val == "no" || val == "true")
+        else if(val == "no" || val == "false")
             bike_direct = bike_forbiden;
         else
             std::cerr << "I don't know what to do with: " << key << "=" << val << std::endl;
     }
 
+    // MM: not correct, will in many cases only be accessible for busses. access indicated by cycleway,
+    // see http://wiki.openstreetmap.org/wiki/Key:busway
+    /*********************************************************
     else if(key == "busway")
     {
         if(val == "yes" || val == "track" || val == "lane")
@@ -165,6 +172,7 @@ bool Edge_property::update(const std::string & key, const std::string & val)
         else
             bike_direct = bike_busway;
     }
+    *************************************************************/
 
     else if(key == "oneway")
     {
