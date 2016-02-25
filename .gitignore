@@ -1,0 +1,7 @@
+build
+dist
+*.egg-info
+*.pyc
+parse_wrap.cpp
+osm4routing_xml.py
+
