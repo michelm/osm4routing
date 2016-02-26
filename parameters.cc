@@ -117,9 +117,9 @@ bool Edge_property::update(const std::string & key, const std::string & val)
 
     else if(key == "pedestrian" || key == "foot")
     {
-        if(val == "yes" || val == "designated" || val == "permissive")
+        if(val == "yes" || val == "designated" || val == "permissive" || val == "true" || val == "use_sidepath")
             foot = foot_allowed;
-        else if(val == "no")
+        else if(val == "no" || val == "false")
             foot = foot_forbiden;
         else
             std::cerr << "I don't know what to do with: " << key << "=" << val << std::endl;
