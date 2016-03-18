@@ -20,12 +20,13 @@ class Node(object):
             self.the_geom = wkt_geom
 
 class Edge(object):
-    def __init__(self, id, source, target, way, length, car, car_rev, bike, bike_rev, foot, the_geom, spatial=False):
+    def __init__(self, id, source, target, way, maxspeed, length, car, car_rev, bike, bike_rev, foot, the_geom, spatial=False):
         wkt_geom = 'LINESTRING({0})'.format(the_geom)
         self.id = id
         self.source = source
         self.target = target
         self.way = way
+        self.maxspeed = maxspeed
         self.length = length
         self.car = car
         self.car_rev = car_rev
@@ -65,6 +66,7 @@ def parse(file, output="csv", edges_name="edges", nodes_name="nodes", spatial=Fa
             Column('source', BigInteger, index=True),
             Column('target', BigInteger, index=True),
             Column('way', BigInteger, index=True),
+            Column('maxspeed', Integer),
             Column('length', Float),
             Column('car', SmallInteger),
             Column('car_rev', SmallInteger),
@@ -138,12 +140,12 @@ def parse(file, output="csv", edges_name="edges", nodes_name="nodes", spatial=Fa
     count = 0
     if output == "csv":
         e = open(edges_name + '.csv', 'w')
-        e.write('"edge_id","source","target","way","length","car","car reverse","bike","bike reverse","foot","WKT"\n')
+        e.write('"edge_id","source","target","way","maxspeed","length","car","car reverse","bike","bike reverse","foot","WKT"\n')
     for edge in edges:
         if output == "csv":
-            e.write('{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},LINESTRING({10})\n'.format(edge.edge_id, edge.source, edge.target, edge.way, edge.length, edge.car, edge.car_d, edge.bike, edge.bike_d, edge.foot, edge.geom))
+            e.write('{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},LINESTRING({11})\n'.format(edge.edge_id, edge.source, edge.target, edge.way, edge.maxspeed, edge.length, edge.car, edge.car_d, edge.bike, edge.bike_d, edge.foot, edge.geom))
         else:
-            session.add(Edge(edge.edge_id, edge.source, edge.target, edge.way, edge.length, edge.car, edge.car_d, edge.bike, edge.bike_d, edge.foot, edge.geom, spatial=spatial))
+            session.add(Edge(edge.edge_id, edge.source, edge.target, edge.way, edge.maxspeed, edge.length, edge.car, edge.car_d, edge.bike, edge.bike_d, edge.foot, edge.geom, spatial=spatial))
         count += 1
     if output == "csv":
         e.close()

@@ -51,6 +51,7 @@ void Edge_property::reset()
     bike_reverse = unknown;
     foot = unknown;
     way = 0;
+    maxspeed = 0;
 }
 
 void Edge_property::normalize()
@@ -192,6 +193,11 @@ bool Edge_property::update(const std::string & key, const std::string & val)
             if(bike_reverse == unknown)
                 bike_reverse = bike_forbiden;
         }
+    }
+    
+    else if(key == "maxspeed")
+    {
+		maxspeed = atoi(val.c_str());
     }
     return this->accessible();
 }

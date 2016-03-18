@@ -112,6 +112,7 @@ void end(void * data, const char * el)
                 << d->ep.car_direct << " " << d->ep.car_reverse << " "
                 << d->ep.bike_direct << " " << d->ep.bike_reverse << " "
                 << d->ep.way << " "
+                << d->ep.maxspeed << " "
                 << d->way_nodes.size();
             for(it = d->way_nodes.begin(); it < d->way_nodes.end(); ++it)
             {
@@ -180,6 +181,7 @@ vector<Edge> Parser::get_edges() const
     char car_direct, car_rev, foot, bike_direct, bike_rev;
     int nb;
     int edges_inserted = 0;
+    int maxspeed = 0;
     Node n;
     string line;
     node_t wid; // way identifier
@@ -187,7 +189,7 @@ vector<Edge> Parser::get_edges() const
     while(getline(tmp, line))
     {
         stringstream way(line);
-        way >> foot >> car_direct >> car_rev >> bike_direct >> bike_rev >> wid >> nb;
+        way >> foot >> car_direct >> car_rev >> bike_direct >> bike_rev >> wid >> maxspeed >> nb;
         bool first_node = true;
 
         // We skip the edge if there is an invalid node
@@ -220,7 +222,7 @@ vector<Edge> Parser::get_edges() const
                 {
                     if(!skip_edge)
                     {
-                      ret.push_back(Edge(edges_inserted, source, id, wid, length, car_direct, car_rev, bike_direct, bike_rev, foot, geom.str()));
+                      ret.push_back(Edge(edges_inserted, source, id, wid, maxspeed, length, car_direct, car_rev, bike_direct, bike_rev, foot, geom.str()));
                     }
 
                     edges_inserted++;
