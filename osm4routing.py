@@ -143,9 +143,18 @@ def parse(file, output="csv", edges_name="edges", nodes_name="nodes", spatial=Fa
         e.write('"edge_id","source","target","way","maxspeed","length","car","car reverse","bike","bike reverse","foot","WKT"\n')
     for edge in edges:
         if output == "csv":
-            e.write('{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},LINESTRING({11})\n'.format(edge.edge_id, edge.source, edge.target, edge.way, edge.maxspeed, edge.length, edge.car, edge.car_d, edge.bike, edge.bike_d, edge.foot, edge.geom))
+            maxspeed = 0
+            if hasattr(edge, "maxspeed"):
+                maxspeed = edge.maxspeed
+            else:
+                print("WARNING: edge(%s) has no maxspeed!" % edge.edge_id)
+        
+            e.write('{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},LINESTRING({11})\n'.format(
+            	edge.edge_id, edge.source, edge.target, edge.way, maxspeed, edge.length, 
+            	edge.car, edge.car_d, edge.bike, edge.bike_d, edge.foot, edge.geom))
         else:
-            session.add(Edge(edge.edge_id, edge.source, edge.target, edge.way, edge.maxspeed, edge.length, edge.car, edge.car_d, edge.bike, edge.bike_d, edge.foot, edge.geom, spatial=spatial))
+            session.add(Edge(edge.edge_id, edge.source, edge.target, edge.way, edge.maxspeed, 
+            	edge.length, edge.car, edge.car_d, edge.bike, edge.bike_d, edge.foot, edge.geom, spatial=spatial))
         count += 1
     if output == "csv":
         e.close()
